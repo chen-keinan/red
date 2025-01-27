@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
+	// "strings"
 )
 
 func main() {
@@ -62,7 +62,8 @@ func main() {
 		fmt.Print(err.Error())
 		os.Exit(0)
 	}
-	file := strings.NewReader(string(out))
-	scanner := bufio.NewScanner(file)
-	fmt.Println(string(out))
+	fmt.Print(string(out))
+	//file := strings.NewReader(string(out))
+	//scanner := bufio.NewScanner(file)
+	//fmt.Println(string(out))
 }
