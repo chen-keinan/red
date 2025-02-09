@@ -45,7 +45,7 @@ func main() {
 		argoServerPortForward = true
 	}
 
-	if paramMap["ddebug-gitops-operator"] == "y" {
+	if paramMap["debug-gitops-operator"] == "y" {
 		fmt.Println("setting ngrok 8082")
 		paramMap["gitops-operator-local-ip"] = getNgrokPublicUrl("8082", "4041")
 		if !argoServerPortForward {
@@ -53,6 +53,8 @@ func main() {
 			portForward("2746", "2746", "argo-server")
 		}
 		patchGitOpsDeployment()
+		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded", paramMap["gitops-operator-local-ip"]))
+		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed", paramMap["gitops-operator-local-ip"]))
 	}
 }
 
@@ -65,7 +67,7 @@ func patchConfigMap(cmName string, key string, value string) {
 }
 
 func patchGitOpsDeployment() {
-	_, err := exec.Command("bash", "-c", "kubectl scale deployment gitops-operator --replicas=0").Output()
+	_, err := exec.Command("bash", "-c", "kubectl scale deployment gitops-operator -n codefresh --replicas=0").Output()
 	if err != nil {
 		panic(err.Error())
 	}
