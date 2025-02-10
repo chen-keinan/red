@@ -30,12 +30,13 @@ func main() {
 		case "--help":
 			help()
 		}
-	}else{
+	} else {
 		help()
 	}
 }
 
 func help() {
+	fmt.Println("cf-cli")
 	fmt.Println("Command Options:")
 	fmt.Println("-- clean      Clean up resources and delete DevEnv files")
 	fmt.Println("-- setup      Setting up DevEnv                         ")
@@ -46,7 +47,7 @@ func getOutputFolder() string {
 	if err != nil {
 		panic(err.Error())
 	}
-	return fmt.Sprintf("%s/dev-output", usr.HomeDir)
+	return fmt.Sprintf("%s/.cf-cli", usr.HomeDir)
 }
 
 func setup(outputFolder string) {
@@ -90,8 +91,11 @@ func setup(outputFolder string) {
 		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 	}
 	createOutputFolder(outputFolder)
+	fmt.Println("********************************************************")
+	fmt.Println("-- output files:                                         ")
 	generateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
 	generateEnvVarForAppProxyDev(paramMap, outputFolder)
+	fmt.Println("\n******************************************************")
 }
 
 func createOutputFolder(path string) {
@@ -131,7 +135,7 @@ func generateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder 
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("- GitOps-Operator Dev Env output path: %s\n", filePath)
+	fmt.Println(fmt.Sprintf("%s", filePath))
 }
 
 func generateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder string) {
@@ -185,7 +189,7 @@ func generateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder strin
 		panic(err.Error())
 	}
 
-	fmt.Printf("- app-Proxy-Operator Dev Env output path: %s\n", filePath)
+	fmt.Printf("%s\n", filePath)
 }
 
 func patchConfigMap(cmName string, key string, value string) {
@@ -221,7 +225,8 @@ func cleanup(folder string, silent bool) {
 	if silent {
 		fmt.Printf("- Clean up output folder: %s\n", folder)
 	}
-	os.RemoveAll(fmt.Sprintf("%s/", folder))
+	os.Remove(fmt.Sprintf("%s/app-proxy-dev-env.json", folder))
+	os.Remove(fmt.Sprintf("%s/gitops-dev-env.json", folder))
 }
 
 func trimValues(val string) string {
@@ -316,6 +321,8 @@ func readInput(paramMap map[string]string) {
 	inputScanner := bufio.NewScanner(os.Stdin)
 	count := 1
 	keys := []string{"Helm Values Path", "Codefresh Namespace", "Cluster Name", "Environment Variable Extract Script Path"}
+	fmt.Println("***************************************************************************************************************************")
+	fmt.Println()
 	for _, key := range keys {
 		fmt.Printf("%d. Enter %s (default:%s):", count, key, paramMap[key])
 		for inputScanner.Scan() {
@@ -332,7 +339,8 @@ func readInput(paramMap map[string]string) {
 		}
 		count++
 	}
-
+	fmt.Println("\n****************************************************************************************************************************")
+	fmt.Println()
 }
 
 func portForward(portInternal string, portExternal string, deploymentName string) {
