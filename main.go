@@ -90,12 +90,19 @@ func setup(outputFolder string) {
 		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 	}
-	createOutputFolder(outputFolder)
-	fmt.Println("********************************************************")
-	fmt.Println("-- output files:                                         ")
-	generateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
-	generateEnvVarForAppProxyDev(paramMap, outputFolder)
-	fmt.Println("\n******************************************************")
+	if paramMap["debug-app-proxy"] == "y" || paramMap["debug-gitops-operator"] == "y" {
+		createOutputFolder(outputFolder)
+		fmt.Println("********************************************************")
+		fmt.Println("-- output files:")
+
+		if paramMap["debug-app-proxy"] == "y" {
+			generateEnvVarForAppProxyDev(paramMap, outputFolder)
+		}
+		if paramMap["debug-gitops-operator"] == "y" {
+			generateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
+		}
+		fmt.Println("\n******************************************************")
+	}
 }
 
 func createOutputFolder(path string) {
@@ -320,7 +327,7 @@ func AddHelmValues(paramMap map[string]string) {
 func readInput(paramMap map[string]string) {
 	inputScanner := bufio.NewScanner(os.Stdin)
 	count := 1
-	keys := []string{"Helm Values Path", "Codefresh Namespace", "Cluster Name", "Environment Variable Extract Script Path"}
+	keys := []string{"Helm Values Path", "Codefresh Namespace", "Cluster Name", "Environment Variable Extract Script Path", "debug-app-proxy", "debug-gitops-operator"}
 	fmt.Println("***************************************************************************************************************************")
 	fmt.Println()
 	for _, key := range keys {
