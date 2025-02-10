@@ -27,7 +27,7 @@ func main() {
 		case "--setup":
 			cleanup(outputFolder, false)
 			setup(outputFolder)
-		case "--help":
+		default:
 			help()
 		}
 	} else {
@@ -39,7 +39,7 @@ func help() {
 	fmt.Println("cf-cli")
 	fmt.Println("Command Options:")
 	fmt.Println("-- clean      Clean up resources and delete DevEnv files")
-	fmt.Println("-- setup      Setting up DevEnv                         ")
+	fmt.Println("-- setup      Setting up app-proxy and gitops-operator DevEnv")
 }
 
 func getOutputFolder() string {
