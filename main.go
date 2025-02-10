@@ -6,6 +6,9 @@ import (
 
 	"os"
 	"runtime-cli/pkg"
+	"runtime-cli/pkg/cluster"
+	"runtime-cli/pkg/env"
+	"runtime-cli/pkg/net"
 )
 
 func main() {
@@ -40,32 +43,32 @@ func setup(outputFolder string) {
 	readInput(paramMap)
 	// add params from values yaml
 	fmt.Println("- Reading Helm Values")
-	pkg.AddHelmValues(paramMap)
+	cluster.AddHelmValues(paramMap)
 	// add params from envVar
 	fmt.Println("- Extracting Values from EnvVar script")
-	pkg.AddEnvParams(paramMap)
+	env.AddEnvParams(paramMap)
 	var argoServerPortForward bool
-	pkg.GetNgrokPublicUrl("2020", "4040")
+	net.GetNgrokPublicUrl("2020", "4040")
 	if paramMap["debug-app-proxy"] == "y" {
 		fmt.Println("- Tunneling 3017 --> Localhost")
-		paramMap["app-proxy-local-ip"] = pkg.GetNgrokPublicUrl("3017", "4041")
-		pkg.PortForward("2746", "2746", "argo-server")
-		pkg.PortForward("8080", "8080", "argo-cd-server")
-		pkg.PatchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
+		paramMap["app-proxy-local-ip"] = net.GetNgrokPublicUrl("3017", "4041")
+		net.PortForward("2746", "2746", "argo-server")
+		net.PortForward("8080", "8080", "argo-cd-server")
+		cluster.PatchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
 		argoServerPortForward = true
 	}
 
 	if paramMap["debug-gitops-operator"] == "y" {
 		fmt.Println("- Tunneling 8082 --> Localhost")
-		paramMap["gitops-operator-local-ip"] = pkg.GetNgrokPublicUrl("8082", "4042")
+		paramMap["gitops-operator-local-ip"] = net.GetNgrokPublicUrl("8082", "4042")
 		if !argoServerPortForward {
-			pkg.PortForward("2746", "2746", "argo-server")
+			net.PortForward("2746", "2746", "argo-server")
 		}
 		fmt.Println("- Scalling down gitops operator to 0")
-		pkg.PatchGitOpsDeployment()
+		cluster.PatchGitOpsDeployment()
 		fmt.Println("- Updating gitops-operator-notifications cm with gitops local dev ip")
-		pkg.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
-		pkg.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
+		cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
+		cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 	}
 	if paramMap["debug-app-proxy"] == "y" || paramMap["debug-gitops-operator"] == "y" {
 		pkg.CreateOutputFolder(outputFolder)
@@ -73,10 +76,10 @@ func setup(outputFolder string) {
 		fmt.Println("-- output files:")
 
 		if paramMap["debug-app-proxy"] == "y" {
-			pkg.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
+			env.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
 		}
 		if paramMap["debug-gitops-operator"] == "y" {
-			pkg.GenerateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
+			env.GenerateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
 		}
 		fmt.Println("\n******************************************************")
 	}
