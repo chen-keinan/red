@@ -11,6 +11,7 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

@@ -24,12 +24,12 @@ func main() {
 	}
 	cleanup()
 	paramMap := map[string]string{
-		"valuesFilePath":                       "/Users/chenkeinan/workspace/codefresh-values/sandbox.values.yaml",
-		"codefreshNamespace":                   "codefresh",
-		"clusterName":                          "kind-codefresh-local-cluster",
-		"environmentVariableExtractScriptPath": "/Users/chenkeinan/workspace/codefresh-values/env.sh",
-		"debug-app-proxy":                      "y",
-		"debug-gitops-operator":                "y",
+		"Helm Values Path":                         "/Users/chenkeinan/workspace/codefresh-values/local.values.yaml",
+		"Codefresh Namespace":                      "codefresh",
+		"Cluster Name":                             "kind-codefresh-local-cluster",
+		"Environment Variable Extract Script Path": "/Users/chenkeinan/workspace/codefresh-values/env.sh",
+		"debug-app-proxy":                          "y",
+		"debug-gitops-operator":                    "y",
 	}
 	// read user input
 	readInput(paramMap)
@@ -38,9 +38,10 @@ func main() {
 	// add params from envVar
 	AddEnvParams(paramMap)
 	var argoServerPortForward bool
+	getNgrokPublicUrl("2020", "4040")
 	if paramMap["debug-app-proxy"] == "y" {
 		fmt.Println("setting ngrok 3017")
-		paramMap["app-proxy-local-ip"] = getNgrokPublicUrl("3017", "4040")
+		paramMap["app-proxy-local-ip"] = getNgrokPublicUrl("3017", "4041")
 		portForward("2746", "2746", "argo-server")
 		portForward("8080", "8081", "argo-cd-server")
 		patchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
@@ -49,7 +50,7 @@ func main() {
 
 	if paramMap["debug-gitops-operator"] == "y" {
 		fmt.Println("setting ngrok 8082")
-		paramMap["gitops-operator-local-ip"] = getNgrokPublicUrl("8082", "4041")
+		paramMap["gitops-operator-local-ip"] = getNgrokPublicUrl("8082", "4042")
 		if !argoServerPortForward {
 			fmt.Println("setting port forward 2746")
 			portForward("2746", "2746", "argo-server")
@@ -57,8 +58,8 @@ func main() {
 		fmt.Println("scalling gitops operator down to 0")
 		patchGitOpsDeployment()
 		fmt.Println("updating gitops-operator-notifications cm with gitops local dev ip")
-		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded", paramMap["gitops-operator-local-ip"]))
-		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed", paramMap["gitops-operator-local-ip"]))
+		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
+		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 	}
 	outputFolder := getOutputFolder()
 	createOutputFolder(outputFolder)
@@ -86,7 +87,7 @@ func createOutputFolder(path string) {
 func generateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder string) {
 	gitOpsOperatorMap := map[string]string{
 		"AP_URL":                    "<app-proxy-local-ip>",
-		"ARGO_CD_URL":               "localhost:8081",
+		"ARGO_CD_URL":               "localhost:8080",
 		"ARGO_WF_URL":               "http://localhost:2746",
 		"ARGO_WF_TOKEN":             "ARGO_WF_TOKEN",
 		"CF_TOKEN":                  "RUNTIME_TOKEN",
@@ -98,7 +99,7 @@ func generateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder 
 		"RUNTIME":                   "codefresh",
 	}
 	gitOpsOperatorMap["AP_URL"] = paramMap["app-proxy-local-ip"]
-	gitOpsOperatorMap["ARGO_WF_TOKEN"] = paramMap["ARGO_WF_TOKEN"]
+	gitOpsOperatorMap["ARGO_WF_TOKEN"] = paramMap["ARGO_WORKFLOWS_SA_TOKEN"]
 	gitOpsOperatorMap["CF_TOKEN"] = paramMap["RUNTIME_TOKEN"]
 	gitOpsOperatorMap["CF_URL"] = paramMap["CF_HOST"]
 
@@ -115,7 +116,7 @@ func generateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder 
 func generateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder string) {
 	appProxyMap := map[string]string{
 		"NODE_TLS_REJECT_UNAUTHORIZED": "0",
-		"ARGO_CD_URL":                  "http://localhost:8089",
+		"ARGO_CD_URL":                  "http://localhost:8080",
 		"ARGO_WORKFLOWS_URL":           "http://localhost:2746",
 		"GIT_PASSWORD":                 "gitPassword",
 		"ARGO_CD_PASSWORD":             "ARGO_CD_PASSWORD",
@@ -227,7 +228,7 @@ func getNgrokPublicUrl(port string, tunnelPort string) string {
 }
 
 func AddEnvParams(envVar map[string]string) {
-	cmd := fmt.Sprintf("%s %s %s", envVar["environmentVariableExtractScriptPath"], envVar["codefreshNamespace"], envVar["clusterName"])
+	cmd := fmt.Sprintf("%s %s %s", envVar["Environment Variable Extract Script Path"], envVar["Codefresh Namespace"], envVar["Cluster Name"])
 	out, err := exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
 		panic(err.Error())
@@ -247,7 +248,7 @@ func AddEnvParams(envVar map[string]string) {
 }
 
 func AddHelmValues(paramMap map[string]string) {
-	file, err := os.ReadFile(paramMap["valuesFilePath"])
+	file, err := os.ReadFile(paramMap["Helm Values Path"])
 	if err != nil {
 		panic(err.Error())
 	}
@@ -280,7 +281,7 @@ func AddHelmValues(paramMap map[string]string) {
 func readInput(paramMap map[string]string) {
 	inputScanner := bufio.NewScanner(os.Stdin)
 	count := 1
-	keys := []string{"valuesFilePath", "codefreshNamespace", "clusterName", "environmentVariableExtractScriptPath"}
+	keys := []string{"Helm Values Path", "Codefresh Namespace", "Cluster Name", "Environment Variable Extract Script Path"}
 	for _, key := range keys {
 		fmt.Printf("%d. Enter %s (default:%s):", count, key, paramMap[key])
 		for inputScanner.Scan() {
