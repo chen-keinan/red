@@ -34,30 +34,34 @@ func main() {
 	// read user input
 	readInput(paramMap)
 	// add params from values yaml
+	fmt.Println("- Reading Helm Values")
 	AddHelmValues(paramMap)
 	// add params from envVar
+	fmt.Println("- Extracting Values from EnvVar script")
 	AddEnvParams(paramMap)
 	var argoServerPortForward bool
 	getNgrokPublicUrl("2020", "4040")
 	if paramMap["debug-app-proxy"] == "y" {
-		fmt.Println("setting ngrok 3017")
+		fmt.Println("- Tunneling 3017 --> Localhost")
 		paramMap["app-proxy-local-ip"] = getNgrokPublicUrl("3017", "4041")
+		fmt.Println("- PortForward 2746 --> Localhost")
 		portForward("2746", "2746", "argo-server")
-		portForward("8080", "8081", "argo-cd-server")
+		fmt.Println("- PortForward 8080 --> Localhost")
+		portForward("8080", "8080", "argo-cd-server")
 		patchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
 		argoServerPortForward = true
 	}
 
 	if paramMap["debug-gitops-operator"] == "y" {
-		fmt.Println("setting ngrok 8082")
+		fmt.Println("- Tunneling 8082 --> Localhost")
 		paramMap["gitops-operator-local-ip"] = getNgrokPublicUrl("8082", "4042")
 		if !argoServerPortForward {
 			fmt.Println("setting port forward 2746")
 			portForward("2746", "2746", "argo-server")
 		}
-		fmt.Println("scalling gitops operator down to 0")
+		fmt.Println("- Scalling down gitops operator to 0")
 		patchGitOpsDeployment()
-		fmt.Println("updating gitops-operator-notifications cm with gitops local dev ip")
+		fmt.Println("- Updating gitops-operator-notifications cm with gitops local dev ip")
 		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 	}
@@ -107,10 +111,12 @@ func generateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder 
 	if err != nil {
 		panic(err.Error())
 	}
-	err = os.WriteFile(fmt.Sprintf("%s/gitops-dev-env.json", outputFolder), gitOpsOperatorData, 0755)
+	filePath := fmt.Sprintf("%s/gitops-dev-env.json", outputFolder)
+	err = os.WriteFile(filePath, gitOpsOperatorData, 0755)
 	if err != nil {
 		panic(err.Error())
 	}
+	fmt.Printf("- GitOps-Operator Dev Env output path: %s\n", filePath)
 }
 
 func generateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder string) {
@@ -158,10 +164,13 @@ func generateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder strin
 	if err != nil {
 		panic(err.Error())
 	}
-	err = os.WriteFile(fmt.Sprintf("%s/app-proxy-dev-env.json", outputFolder), gitAppProxyData, 0755)
+	filePath := fmt.Sprintf("%s/app-proxy-dev-env.json", outputFolder)
+	err = os.WriteFile(filePath, gitAppProxyData, 0755)
 	if err != nil {
 		panic(err.Error())
 	}
+
+	fmt.Printf("- app-Proxy-Operator Dev Env output path: %s\n", filePath)
 }
 
 func patchConfigMap(cmName string, key string, value string) {
