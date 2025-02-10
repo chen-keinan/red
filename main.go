@@ -18,11 +18,12 @@ import (
 
 func main() {
 	argsWithoutProg := os.Args[1:]
+	outputFolder := getOutputFolder()
 	if len(argsWithoutProg) > 0 && argsWithoutProg[0] == "cleanup" {
-		cleanup()
+		cleanup(outputFolder)
 		return
 	}
-	cleanup()
+	cleanup(outputFolder)
 	paramMap := map[string]string{
 		"Helm Values Path":                         "/Users/chenkeinan/workspace/codefresh-values/local.values.yaml",
 		"Codefresh Namespace":                      "codefresh",
@@ -44,9 +45,7 @@ func main() {
 	if paramMap["debug-app-proxy"] == "y" {
 		fmt.Println("- Tunneling 3017 --> Localhost")
 		paramMap["app-proxy-local-ip"] = getNgrokPublicUrl("3017", "4041")
-		fmt.Println("- PortForward 2746 --> Localhost")
 		portForward("2746", "2746", "argo-server")
-		fmt.Println("- PortForward 8080 --> Localhost")
 		portForward("8080", "8080", "argo-cd-server")
 		patchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
 		argoServerPortForward = true
@@ -56,7 +55,6 @@ func main() {
 		fmt.Println("- Tunneling 8082 --> Localhost")
 		paramMap["gitops-operator-local-ip"] = getNgrokPublicUrl("8082", "4042")
 		if !argoServerPortForward {
-			fmt.Println("setting port forward 2746")
 			portForward("2746", "2746", "argo-server")
 		}
 		fmt.Println("- Scalling down gitops operator to 0")
@@ -65,7 +63,6 @@ func main() {
 		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 		patchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 	}
-	outputFolder := getOutputFolder()
 	createOutputFolder(outputFolder)
 	generateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
 	generateEnvVarForAppProxyDev(paramMap, outputFolder)
@@ -188,15 +185,19 @@ func patchGitOpsDeployment() {
 	}
 }
 
-func cleanup() {
+func cleanup(folder string) {
+	fmt.Println("- Clean up ngrok tunnels")
 	_, err := exec.Command("bash", "-c", "pgrep -f ngrok | xargs kill -9").Output()
 	if err != nil {
 		panic(err.Error())
 	}
+	fmt.Println("- Clean up port forwards")
 	_, err = exec.Command("bash", "-c", "pgrep -f port-forward | xargs kill -9").Output()
 	if err != nil {
 		panic(err.Error())
 	}
+	fmt.Printf("- Clean up output folder: %s\n", folder)
+	os.RemoveAll(fmt.Sprintf("%s/", folder))
 }
 
 func trimValues(val string) string {
