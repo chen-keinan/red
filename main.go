@@ -19,11 +19,37 @@ import (
 func main() {
 	argsWithoutProg := os.Args[1:]
 	outputFolder := getOutputFolder()
-	if len(argsWithoutProg) > 0 && argsWithoutProg[0] == "cleanup" {
-		cleanup(outputFolder)
-		return
+	if len(argsWithoutProg) > 0 {
+		switch argsWithoutProg[0] {
+		case "--clean":
+			cleanup(outputFolder, true)
+			return
+		case "--setup":
+			cleanup(outputFolder, false)
+			setup(outputFolder)
+		case "--help":
+			help()
+		}
+	}else{
+		help()
 	}
-	cleanup(outputFolder)
+}
+
+func help() {
+	fmt.Println("Command Options:")
+	fmt.Println("-- clean      Clean up resources and delete DevEnv files")
+	fmt.Println("-- setup      Setting up DevEnv                         ")
+}
+
+func getOutputFolder() string {
+	usr, err := user.Current()
+	if err != nil {
+		panic(err.Error())
+	}
+	return fmt.Sprintf("%s/dev-output", usr.HomeDir)
+}
+
+func setup(outputFolder string) {
 	paramMap := map[string]string{
 		"Helm Values Path":                         "/Users/chenkeinan/workspace/codefresh-values/local.values.yaml",
 		"Codefresh Namespace":                      "codefresh",
@@ -66,14 +92,6 @@ func main() {
 	createOutputFolder(outputFolder)
 	generateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
 	generateEnvVarForAppProxyDev(paramMap, outputFolder)
-}
-
-func getOutputFolder() string {
-	usr, err := user.Current()
-	if err != nil {
-		panic(err.Error())
-	}
-	return fmt.Sprintf("%s/dev-output", usr.HomeDir)
 }
 
 func createOutputFolder(path string) {
@@ -185,18 +203,24 @@ func patchGitOpsDeployment() {
 	}
 }
 
-func cleanup(folder string) {
-	fmt.Println("- Clean up ngrok tunnels")
+func cleanup(folder string, silent bool) {
+	if silent {
+		fmt.Println("- Clean up ngrok tunnels")
+	}
 	_, err := exec.Command("bash", "-c", "pgrep -f ngrok | xargs kill -9").Output()
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println("- Clean up port forwards")
+	if silent {
+		fmt.Println("- Clean up port forwards")
+	}
 	_, err = exec.Command("bash", "-c", "pgrep -f port-forward | xargs kill -9").Output()
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("- Clean up output folder: %s\n", folder)
+	if silent {
+		fmt.Printf("- Clean up output folder: %s\n", folder)
+	}
 	os.RemoveAll(fmt.Sprintf("%s/", folder))
 }
 
