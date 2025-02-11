@@ -128,7 +128,7 @@ func readInput(paramMap map[string]string, configFolder string) error {
 		}
 		count++
 	}
-	data, err := json.Marshal(paramMap)
+	data, err := json.MarshalIndent(paramMap, "", "    ")
 	if err != nil {
 		return err
 	}
