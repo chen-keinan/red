@@ -7,7 +7,7 @@ import (
 )
 
 func AddHelmValues(paramMap map[string]string) {
-	file, err := os.ReadFile(paramMap["Helm Values Path"])
+	file, err := os.ReadFile(paramMap["helm_values_path"])
 	if err != nil {
 		panic(err.Error())
 	}

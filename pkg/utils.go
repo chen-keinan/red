@@ -50,5 +50,5 @@ func GetOutputFolder() string {
 	if err != nil {
 		panic(err.Error())
 	}
-	return fmt.Sprintf("%s/.cf-cli", usr.HomeDir)
+	return fmt.Sprintf("%s/.dev-cli", usr.HomeDir)
 }
