@@ -39,7 +39,7 @@ func Cleanup(folder string, silent bool) {
 }
 
 func Help() {
-	fmt.Println("cf-cli")
+	fmt.Println("dev-cli")
 	fmt.Println("Command Options:")
 	fmt.Println("-- clean      Clean up resources and delete DevEnv files")
 	fmt.Println("-- setup      Setting up app-proxy and gitops-operator DevEnv")
