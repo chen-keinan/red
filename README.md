@@ -54,7 +54,6 @@ Forwarding from [::1]:8080 -> 8080
 -- output files:
 /Users/<name>/.devcli/app-proxy-dev-env.json
 /Users/<name>/.devcli/gitops-dev-env.json
-/Users/<name>/.devcli/gitops-dev-env.json
 
 ******************************************************
 ```
