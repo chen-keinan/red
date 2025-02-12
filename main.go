@@ -25,7 +25,7 @@ func main() {
 		case "--clean":
 			err = commands.Cleanup(outputFolder, true)
 			if err != nil {
-				fmt.Println(fmt.Errorf("error: failed to create output folder: %w", err))
+				fmt.Println(fmt.Errorf("error: failed to cleanup resource: %w", err))
 				os.Exit(1)
 			}
 			return
