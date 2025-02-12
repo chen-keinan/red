@@ -2,7 +2,7 @@ module runtime-cli
 
 go 1.23.4
 
-require helm.sh/helm v2.17.0+incompatible
+require k8s.io/helm v2.17.0+incompatible
 
 require (
 	github.com/BurntSushi/toml v1.4.0 // indirect
@@ -16,5 +16,4 @@ require (
 	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/apimachinery v0.32.1 // indirect
-	k8s.io/helm v2.17.0+incompatible // indirect
 )

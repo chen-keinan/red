@@ -1,13 +1,7 @@
-SHELL := /bin/bash
-
 GOCMD=go
-GOMOCKS=$(GOCMD) generate ./...
-GOMOD=$(GOCMD) mod
-GOTEST=$(GOCMD) test
-
 
 all:
-	$(info  "completed running make file for go-simple-config")
+	$(info  "completed running make file for dev-cli")
 fmt:
 	@go fmt ./...
 build:
