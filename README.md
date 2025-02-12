@@ -61,6 +61,8 @@ Forwarding from [::1]:8080 -> 8080
 ## Cleanup Dev Env
 ```sh
 ./devcli --clean
+- Revert codefresh-cm ingressUrl value
+- Revert gitops-operator-notifications-cm gitops-operator value
 - Clean up ngrok tunnels
 - Clean up port forwards
 - Clean up output folder: /Users/<name>/.devcli
