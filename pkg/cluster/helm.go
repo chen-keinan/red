@@ -37,3 +37,19 @@ func AddHelmValues(paramMap map[string]string) error {
 	paramMap["CF_HOST"] = hostData["url"].(string)
 	return nil
 }
+
+func GetIngressUrl(filePath string) (string, error) {
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+	doc, err := chartutil.ReadValues(file)
+	if err != nil {
+		return "", err
+	}
+	runtime, err := doc.Table("global.runtime")
+	if err != nil {
+		return "", err
+	}
+	return runtime["ingressUrl"].(string), nil
+}

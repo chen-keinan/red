@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	argsWithoutProg := os.Args[1:]
+	commandsParam := os.Args[1:]
 	outputFolder, err := pkg.GetOutputFolder()
 	if err != nil {
 		fmt.Println(fmt.Errorf("error: failed to get output folder name: %w", err))
@@ -19,31 +19,30 @@ func main() {
 		fmt.Println(fmt.Errorf("error: failed to create output folder: %w", err))
 		os.Exit(1)
 	}
+	if len(commandsParam) == 0 {
+		commandsParam = append(commandsParam, "no-command")
+	}
 
-	if len(argsWithoutProg) > 0 {
-		switch argsWithoutProg[0] {
-		case "--clean":
-			err = commands.Cleanup(outputFolder, true)
-			if err != nil {
-				fmt.Println(fmt.Errorf("error: failed to cleanup resource: %w", err))
-				os.Exit(1)
-			}
-			return
-		case "--setup":
-			err = commands.Cleanup(outputFolder, false)
-			if err != nil {
-				fmt.Println(fmt.Errorf("error: failed to cleanup resources: %w", err))
-				os.Exit(1)
-			}
-			err = commands.Setup(outputFolder)
-			if err != nil {
-				fmt.Println(fmt.Errorf("error: failed to setup dev env %w", err))
-				os.Exit(1)
-			}
-		default:
-			pkg.Help()
+	switch commandsParam[0] {
+	case "--clean":
+		err = commands.Cleanup(outputFolder, true)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error: failed to cleanup resource: %w", err))
+			os.Exit(1)
 		}
-	} else {
+		return
+	case "--setup":
+		err = commands.Cleanup(outputFolder, false)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error: failed to cleanup resources: %w", err))
+			os.Exit(1)
+		}
+		err = commands.Setup(outputFolder)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error: failed to setup dev env %w", err))
+			os.Exit(1)
+		}
+	default:
 		pkg.Help()
 	}
 }
