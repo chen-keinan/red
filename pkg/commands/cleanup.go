@@ -16,7 +16,7 @@ func Cleanup(folder string, notSilent bool) error {
 	}
 	if config.DebugAppProxy == "y" {
 		if notSilent {
-			fmt.Println("- Revert codefresh-cm ingressUrl value")
+			fmt.Println("- Revert codefresh-cm configmap")
 		}
 		err = cluster.PatchConfigMap("codefresh-cm", "ingressHost", ingressUrl)
 		if err != nil {
@@ -25,7 +25,7 @@ func Cleanup(folder string, notSilent bool) error {
 	}
 	if config.DebugGitopsOperator == "y" {
 		if notSilent {
-			fmt.Println("- Revert gitops-operator-notifications-cm gitops-operator value")
+			fmt.Println("- Revert gitops-operator-notifications-cm configmap")
 		}
 		gitOpsOperatorUrl := "http://localhost:8082"
 		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", gitOpsOperatorUrl))

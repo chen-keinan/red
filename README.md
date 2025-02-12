@@ -70,8 +70,8 @@ copy the env var values from the `output files` and put it in your ide (app-prox
 ## Cleanup -  Dev Env
 ```sh
 ./devcli --clean
-- Revert codefresh-cm ingressUrl value
-- Revert gitops-operator-notifications-cm gitops-operator value
+- Revert codefresh-cm configmap
+- Revert gitops-operator-notifications-cm configmap
 - Clean up ngrok tunnels
 - Clean up port forwards
 - Clean up output folder: /Users/<name>/.devcli
