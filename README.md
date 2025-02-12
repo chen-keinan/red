@@ -65,7 +65,7 @@ Forwarding from [::1]:8080 -> 8080
 ******************************************************
 ```
 
-copy the env var values from the above files and put it in your ide (app-proxy and gitops-operator launch setting )
+copy the env var values from the output files and put it in your ide (app-proxy and gitops-operator launch setting )
 
 ## Cleanup Dev Env
 ```sh
