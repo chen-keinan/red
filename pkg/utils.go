@@ -39,7 +39,7 @@ func Cleanup(folder string, silent bool) {
 }
 
 func Help() {
-	fmt.Println("dev-cli")
+	fmt.Println("devcli")
 	fmt.Println("Command Options:")
 	fmt.Println("-- clean      Clean up resources and delete DevEnv files")
 	fmt.Println("-- setup      Setting up app-proxy and gitops-operator DevEnv")
@@ -50,5 +50,5 @@ func GetOutputFolder() string {
 	if err != nil {
 		panic(err.Error())
 	}
-	return fmt.Sprintf("%s/.dev-cli", usr.HomeDir)
+	return fmt.Sprintf("%s/.devcli", usr.HomeDir)
 }

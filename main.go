@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	"devcli/pkg"
+	"devcli/pkg/cluster"
+	"devcli/pkg/env"
+	"devcli/pkg/net"
 	"os"
-	"runtime-cli/pkg"
-	"runtime-cli/pkg/cluster"
-	"runtime-cli/pkg/env"
-	"runtime-cli/pkg/net"
 )
 
 func main() {

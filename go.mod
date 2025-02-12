@@ -1,4 +1,4 @@
-module runtime-cli
+module devcli
 
 go 1.23.4
 
