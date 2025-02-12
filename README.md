@@ -1,5 +1,5 @@
 ## Runtime Dev Cli
-Simplify development via IDE withj runtime components running in cluster (app-proxy - gitops-operator)
+Simplify development via IDE with runtime components running in cluster (app-proxy / gitops-operator)
 - Setup ngrok tunnels from cluster to local env
 - Port forward fro cluster to local env
 - Update relevent configmaps with tunnels external ip
