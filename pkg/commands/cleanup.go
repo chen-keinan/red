@@ -55,6 +55,6 @@ func Cleanup(folder string, notSilent bool) error {
 		fmt.Printf("- Clean up output folder: %s\n", folder)
 	}
 	os.Remove(fmt.Sprintf("%s/app-proxy-dev-env.json", folder))
-	os.Remove(fmt.Sprintf("%s/gitops-dev-env.json", folder))
+	os.Remove(fmt.Sprintf("%s/gitops-operator-dev-env.json", folder))
 	return nil
 }

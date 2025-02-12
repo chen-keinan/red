@@ -84,7 +84,7 @@ func GenerateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder 
 	if err != nil {
 		return err
 	}
-	filePath := fmt.Sprintf("%s/gitops-dev-env.json", outputFolder)
+	filePath := fmt.Sprintf("%s/gitops-operator-dev-env.json", outputFolder)
 	err = os.WriteFile(filePath, gitOpsOperatorData, 0755)
 	if err != nil {
 		return err

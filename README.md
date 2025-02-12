@@ -6,6 +6,13 @@ Simplify development via IDE withj runtime components running in cluster (app-pr
 - Create env variable files for gitops-operator and app-proxy to be used with IDE
 
 ## Getting started
+
+### pre-requisite
+- running k8s cluster
+- make sure gitops-runtime is deployed to you cluster and its running without any errors
+- make sure values.yaml for that installation is avaliable on specific folder
+- make sure the env.sh script (extract runtime values) is avaliable on specific folder
+
 ```sh
 git clone https://github.com/chen-keinan/devcli
 cd devcli
@@ -53,10 +60,12 @@ Forwarding from [::1]:8080 -> 8080
 ********************************************************
 -- output files:
 /Users/<name>/.devcli/app-proxy-dev-env.json
-/Users/<name>/.devcli/gitops-dev-env.json
+/Users/<name>/.devcli/gitops-operator-dev-env.json
 
 ******************************************************
 ```
+
+copy the env var values from the above files and put it in your ide (app-proxy and gitops-operator launch setting )
 
 ## Cleanup Dev Env
 ```sh
