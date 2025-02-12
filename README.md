@@ -30,7 +30,7 @@ Command Options:
 
 ***************************************************************************************************************************
 
-1. Enter Helm Values Path (default: /path/to/values.yaml):
+1. Enter Helm Values Path (default: /path/to/runtime/values.yaml):
 2. Enter Codefresh Namespace (default: codefresh):
 3. Enter Cluster Name (default: kind-codefresh-local-cluster):
 4. Enter Environment Variable Script Path (default: /path/to/env/extarct/script/env.sh):
