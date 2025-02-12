@@ -31,7 +31,7 @@ Command Options:
 -- setup      Setting up app-proxy and gitops-operator DevEnv
 ```
 
-## Setup Dev Env
+## Setup - Dev Env
 ```sh
 ./devcli --setup
 
@@ -67,7 +67,7 @@ Forwarding from [::1]:8080 -> 8080
 
 copy the env var values from the `output files` and put it in your ide (app-proxy and gitops-operator launch setting )
 
-## Cleanup Dev Env
+## Cleanup -  Dev Env
 ```sh
 ./devcli --clean
 - Revert codefresh-cm ingressUrl value
