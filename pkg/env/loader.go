@@ -12,14 +12,14 @@ import (
 
 const DevCliConfigFile = "devcli.json"
 
-func AddEnvParams(envVar map[string]string) {
+func AddEnvParams(envVar map[string]string) error {
 	cmd := fmt.Sprintf("%s %s %s", envVar["environment_variable_script_path"], envVar["codefresh_namespace"], envVar["cluster_name"])
 	out, err := exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	env := string(out)
 	envScanner := bufio.NewScanner(strings.NewReader(env))
@@ -30,6 +30,7 @@ func AddEnvParams(envVar map[string]string) {
 			envVar[trimValues(values[0])] = trimValues(values[1])
 		}
 	}
+	return nil
 }
 
 func trimValues(val string) string {

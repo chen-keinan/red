@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func GenerateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder string) {
+func GenerateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder string) error {
 	appProxyMap := map[string]string{
 		"NODE_TLS_REJECT_UNAUTHORIZED": "0",
 		"ARGO_CD_URL":                  "http://localhost:8080",
@@ -49,18 +49,19 @@ func GenerateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder strin
 
 	gitAppProxyData, err := json.MarshalIndent(appProxyMap, "", "    ")
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	filePath := fmt.Sprintf("%s/app-proxy-dev-env.json", outputFolder)
 	err = os.WriteFile(filePath, gitAppProxyData, 0755)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	fmt.Printf("%s\n", filePath)
+	return nil
 }
 
-func GenerateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder string) {
+func GenerateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder string) error {
 	gitOpsOperatorMap := map[string]string{
 		"AP_URL":                    "<app-proxy-local-ip>",
 		"ARGO_CD_URL":               "localhost:8080",
@@ -81,12 +82,13 @@ func GenerateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder 
 
 	gitOpsOperatorData, err := json.MarshalIndent(gitOpsOperatorMap, "", "    ")
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	filePath := fmt.Sprintf("%s/gitops-dev-env.json", outputFolder)
 	err = os.WriteFile(filePath, gitOpsOperatorData, 0755)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
-	fmt.Println(fmt.Sprintf("%s", filePath))
+	fmt.Printf("%s\n", filePath)
+	return nil
 }

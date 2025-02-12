@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func Setup(outputFolder string) {
+func Setup(outputFolder string) error {
 	paramMap := map[string]string{
 		"helm_values_path":                 "/helm_values/file/path",
 		"codefresh_namespace":              "codefresh",
@@ -29,48 +29,95 @@ func Setup(outputFolder string) {
 	}
 
 	// read user input
-	pkg.ReadInput(paramMap, outputFolder)
+	err := pkg.ReadInput(paramMap, outputFolder)
+	if err != nil {
+		return err
+	}
 	// add params from values yaml
 	fmt.Println("- Reading Helm Values")
-	cluster.AddHelmValues(paramMap)
+	err = cluster.AddHelmValues(paramMap)
+	if err != nil {
+		return err
+	}
 	// add params from envVar
 	fmt.Println("- Extracting Values from EnvVar script")
-	env.AddEnvParams(paramMap)
+	err = env.AddEnvParams(paramMap)
+	if err != nil {
+		return err
+	}
 	var argoServerPortForward bool
-	net.GetNgrokPublicUrl("2020", "4040")
+	_, err = net.GetNgrokPublicUrl("2020", "4040")
+	if err != nil {
+		return err
+	}
 	if paramMap["debug_app_proxy"] == "y" {
 		fmt.Println("- Tunneling 3017 --> Localhost")
-		paramMap["app-proxy-local-ip"] = net.GetNgrokPublicUrl("3017", "4041")
-		net.PortForward("2746", "2746", "argo-server")
-		net.PortForward("8080", "8080", "argo-cd-server")
+		appProxyLocalIp, err := net.GetNgrokPublicUrl("3017", "4041")
+		if err != nil {
+			return err
+		}
+		paramMap["app-proxy-local-ip"] = appProxyLocalIp
+		err = net.PortForward("2746", "2746", "argo-server")
+		if err != nil {
+			return err
+		}
+		err = net.PortForward("8080", "8080", "argo-cd-server")
+		if err != nil {
+			return err
+		}
 		fmt.Println("- Updating codefresh-cm")
-		cluster.PatchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
+		err = cluster.PatchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
+		if err != nil {
+			return err
+		}
 		argoServerPortForward = true
 	}
 
 	if paramMap["debug_gitops_operator"] == "y" {
 		fmt.Println("- Tunneling 8082 --> Localhost")
-		paramMap["gitops-operator-local-ip"] = net.GetNgrokPublicUrl("8082", "4042")
+		gitopsOperatorLocalIp, err := net.GetNgrokPublicUrl("8082", "4042")
+		if err != nil {
+			return err
+		}
+		paramMap["gitops-operator-local-ip"] = gitopsOperatorLocalIp
 		if !argoServerPortForward {
-			net.PortForward("2746", "2746", "argo-server")
+			err = net.PortForward("2746", "2746", "argo-server")
+			if err != nil {
+				return err
+			}
 		}
 		fmt.Println("- Scalling down gitops operator to 0")
-		cluster.PatchGitOpsDeployment()
+		err = cluster.PatchGitOpsDeployment()
+		if err != nil {
+			return err
+		}
 		fmt.Println("- Updating gitops-operator-notifications cm")
-		cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
-		cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
+		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
+		if err != nil {
+			return err
+		}
+		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
+		if err != nil {
+			return err
+		}
 	}
 	if paramMap["debug_app_proxy"] == "y" || paramMap["debug_gitops_operator"] == "y" {
-		pkg.CreateOutputFolder(outputFolder)
 		fmt.Println("********************************************************")
 		fmt.Println("-- output files:")
 
 		if paramMap["debug_app_proxy"] == "y" {
-			env.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
+			err := env.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
+			if err != nil {
+				return err
+			}
 		}
 		if paramMap["debug_gitops_operator"] == "y" {
-			env.GenerateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
+			err := env.GenerateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
+			if err != nil {
+				return err
+			}
 		}
 		fmt.Println("\n******************************************************")
 	}
+	return nil
 }

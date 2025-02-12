@@ -10,13 +10,14 @@ import (
 	"strings"
 )
 
-func CreateOutputFolder(path string) {
+func CreateOutputFolder(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
-			panic(err.Error())
+			return err
 		}
 	}
+	return nil
 }
 
 func Help() {
@@ -26,12 +27,12 @@ func Help() {
 	fmt.Println("-- setup      Setting up app-proxy and gitops-operator DevEnv")
 }
 
-func GetOutputFolder() string {
+func GetOutputFolder() (string, error) {
 	usr, err := user.Current()
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
-	return fmt.Sprintf("%s/.devcli", usr.HomeDir)
+	return fmt.Sprintf("%s/.devcli", usr.HomeDir), nil
 }
 
 func ReadInput(paramMap map[string]string, configFolder string) error {
