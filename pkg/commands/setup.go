@@ -10,17 +10,17 @@ import (
 
 func Setup(outputFolder string) {
 	paramMap := map[string]string{
-		"helm_values_path":                 "/Users/chenkeinan/workspace/codefresh-values/local.values.yaml",
+		"helm_values_path":                 "/helm_values/file/path",
 		"codefresh_namespace":              "codefresh",
-		"cluster_name":                     "kind-codefresh-local-cluster",
-		"environment_variable_script_path": "/Users/chenkeinan/workspace/codefresh-values/env.sh",
+		"cluster_name":                     "clusterName",
+		"environment_variable_script_path": "/env/shell/script/file/path",
 		"debug_app_proxy":                  "y",
 		"debug_gitops_operator":            "y",
 	}
 
 	config := env.LoadConfigfile(outputFolder)
 	if config != nil {
-		paramMap["helm_Values_path"] = config.HelmValuesPath
+		paramMap["helm_values_path"] = config.HelmValuesPath
 		paramMap["codefresh_namespace"] = config.CodefreshNamespace
 		paramMap["cluster_name"] = config.CodefreshClusterName
 		paramMap["environment_variable_script_path"] = config.EnvironmentVariableScriptPath
@@ -43,6 +43,7 @@ func Setup(outputFolder string) {
 		paramMap["app-proxy-local-ip"] = net.GetNgrokPublicUrl("3017", "4041")
 		net.PortForward("2746", "2746", "argo-server")
 		net.PortForward("8080", "8080", "argo-cd-server")
+		fmt.Println("- Updating codefresh-cm")
 		cluster.PatchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
 		argoServerPortForward = true
 	}
@@ -55,7 +56,7 @@ func Setup(outputFolder string) {
 		}
 		fmt.Println("- Scalling down gitops operator to 0")
 		cluster.PatchGitOpsDeployment()
-		fmt.Println("- Updating gitops-operator-notifications cm with gitops local dev ip")
+		fmt.Println("- Updating gitops-operator-notifications cm")
 		cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 		cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
 	}

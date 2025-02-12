@@ -47,7 +47,7 @@ func ReadInput(paramMap map[string]string, configFolder string) error {
 		} else {
 			realKey = strings.ReplaceAll(strings.ToLower(key), " ", "_")
 		}
-		fmt.Printf("%d. Enter %s (default:%s):", count, key, paramMap[realKey])
+		fmt.Printf("%d. Enter %s (default: %s):", count, key, paramMap[realKey])
 		for inputScanner.Scan() {
 			input := inputScanner.Text()
 			if input == "" && len(paramMap[realKey]) == 0 {
