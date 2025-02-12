@@ -6,6 +6,7 @@ import (
 	"devcli/pkg/env"
 	"devcli/pkg/net"
 	"fmt"
+	"strconv"
 )
 
 func Setup(outputFolder string) error {
@@ -46,13 +47,15 @@ func Setup(outputFolder string) error {
 		return err
 	}
 	var argoServerPortForward bool
-	_, err = net.GetNgrokPublicUrl("2020", "4040")
+	initialP := 4040
+	_, err = net.GetNgrokPublicUrl("2020", strconv.Itoa(initialP))
 	if err != nil {
 		return err
 	}
 	if paramMap["debug_app_proxy"] == "y" {
 		fmt.Println("- Tunneling 3017 --> Localhost")
-		appProxyLocalIp, err := net.GetNgrokPublicUrl("3017", "4041")
+		initialP++
+		appProxyLocalIp, err := net.GetNgrokPublicUrl("3017", strconv.Itoa(initialP))
 		if err != nil {
 			return err
 		}
@@ -75,7 +78,8 @@ func Setup(outputFolder string) error {
 
 	if paramMap["debug_gitops_operator"] == "y" {
 		fmt.Println("- Tunneling 8082 --> Localhost")
-		gitopsOperatorLocalIp, err := net.GetNgrokPublicUrl("8082", "4042")
+		initialP++
+		gitopsOperatorLocalIp, err := net.GetNgrokPublicUrl("8082", strconv.Itoa(initialP))
 		if err != nil {
 			return err
 		}
@@ -100,24 +104,28 @@ func Setup(outputFolder string) error {
 		if err != nil {
 			return err
 		}
-	}
-	if paramMap["debug_app_proxy"] == "y" || paramMap["debug_gitops_operator"] == "y" {
-		fmt.Println("********************************************************")
-		fmt.Println("-- output files:")
-
-		if paramMap["debug_app_proxy"] == "y" {
-			err := env.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
+		if paramMap["debug_app_proxy"] != "y" {
+			err = net.PortForward("3017", "3017", "cap-app-proxy")
 			if err != nil {
 				return err
 			}
+			paramMap["app-proxy-local-ip"] = "http://localhost:3017"
 		}
-		if paramMap["debug_gitops_operator"] == "y" {
-			err := env.GenerateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
-			if err != nil {
-				return err
-			}
-		}
-		fmt.Println("\n******************************************************")
 	}
+	fmt.Println("********************************************************")
+	fmt.Println("-- output files:")
+	if paramMap["debug_app_proxy"] == "y" {
+		err := env.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
+		if err != nil {
+			return err
+		}
+	}
+	if paramMap["debug_gitops_operator"] == "y" {
+		err := env.GenerateEnvVarForGitOpsOpertorDev(paramMap, outputFolder)
+		if err != nil {
+			return err
+		}
+	}
+	fmt.Println("\n******************************************************")
 	return nil
 }
