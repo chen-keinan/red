@@ -1,10 +1,13 @@
 package pkg
 
 import (
+	"bufio"
+	"devcli/pkg/env"
+	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"os/user"
+	"strings"
 )
 
 func CreateOutputFolder(path string) {
@@ -14,28 +17,6 @@ func CreateOutputFolder(path string) {
 			panic(err.Error())
 		}
 	}
-}
-
-func Cleanup(folder string, silent bool) {
-	if silent {
-		fmt.Println("- Clean up ngrok tunnels")
-	}
-	_, err := exec.Command("bash", "-c", "pgrep -f ngrok | xargs kill -9").Output()
-	if err != nil {
-		panic(err.Error())
-	}
-	if silent {
-		fmt.Println("- Clean up port forwards")
-	}
-	_, err = exec.Command("bash", "-c", "pgrep -f port-forward | xargs kill -9").Output()
-	if err != nil {
-		panic(err.Error())
-	}
-	if silent {
-		fmt.Printf("- Clean up output folder: %s\n", folder)
-	}
-	os.Remove(fmt.Sprintf("%s/app-proxy-dev-env.json", folder))
-	os.Remove(fmt.Sprintf("%s/gitops-dev-env.json", folder))
 }
 
 func Help() {
@@ -51,4 +32,46 @@ func GetOutputFolder() string {
 		panic(err.Error())
 	}
 	return fmt.Sprintf("%s/.devcli", usr.HomeDir)
+}
+
+func ReadInput(paramMap map[string]string, configFolder string) error {
+	inputScanner := bufio.NewScanner(os.Stdin)
+	count := 1
+	keys := []string{"Helm Values Path", "Codefresh Namespace", "Cluster Name", "Environment Variable Script Path", "debug-app-proxy", "debug-gitops-operator"}
+	fmt.Println("***************************************************************************************************************************")
+	fmt.Println()
+	for _, key := range keys {
+		realKey := key
+		if strings.Contains(key, "-") {
+			realKey = strings.ReplaceAll(key, "-", "_")
+		} else {
+			realKey = strings.ReplaceAll(strings.ToLower(key), " ", "_")
+		}
+		fmt.Printf("%d. Enter %s (default:%s):", count, key, paramMap[realKey])
+		for inputScanner.Scan() {
+			input := inputScanner.Text()
+			if input == "" && len(paramMap[realKey]) == 0 {
+				fmt.Print("you must enter a value\n")
+				fmt.Printf("%d. Enter %s", count, key)
+				continue
+			}
+			if input != "" {
+				paramMap[realKey] = input
+			}
+			break
+		}
+		count++
+	}
+	data, err := json.MarshalIndent(paramMap, "", "    ")
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(fmt.Sprintf("%s/%s", configFolder, env.DevCliConfigFile), data, 0644)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("\n****************************************************************************************************************************")
+	fmt.Println()
+	return nil
 }
