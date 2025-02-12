@@ -11,7 +11,7 @@ Simplify development via IDE with runtime components running in cluster (app-pro
 - running k8s cluster
 - make sure gitops-runtime is deployed to you cluster and its running without any errors
 - make sure values.yaml for that installation is avaliable on specific folder
-- make sure the env.sh script (extract runtime values) is avaliable on specific folder
+- make sure the `env.sh` script (extract runtime values) is avaliable on specific folder
 
 ```sh
 git clone https://github.com/chen-keinan/devcli
