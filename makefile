@@ -6,6 +6,8 @@ fmt:
 	@go fmt ./...
 build:
 	go build -o devcli
+install:
+	GOBIN=/usr/local/bin/ go install
 tidy:
 	$(GOMOD) tidy -v
 

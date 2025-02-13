@@ -16,12 +16,12 @@ Simplify development via IDE with runtime components running in cluster (app-pro
 ```sh
 git clone https://github.com/chen-keinan/devcli
 cd devcli
-make build
+make install
 ```
 
 ## Basic usage
 ```sh
-./devcli
+devcli
 ```
 
 ```sh
@@ -33,7 +33,7 @@ Command Options:
 
 ## Setup - Dev Env
 ```sh
-./devcli --setup
+devcli --setup
 
 ***************************************************************************************************************************
 
@@ -69,7 +69,7 @@ copy the env var values from the `output files` and put it in your ide (app-prox
 
 ## Cleanup -  Dev Env
 ```sh
-./devcli --clean
+devcli --clean
 - Revert codefresh-cm configmap
 - Revert gitops-operator-notifications-cm configmap
 - Clean up ngrok tunnels
