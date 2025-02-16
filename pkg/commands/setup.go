@@ -91,7 +91,7 @@ func Setup(outputFolder string) error {
 			}
 		}
 		fmt.Println("- Scalling down gitops operator to 0")
-		err = cluster.PatchGitOpsDeployment()
+		err = cluster.PatchGitOpsDeploymentReplicaSet("0")
 		if err != nil {
 			return err
 		}

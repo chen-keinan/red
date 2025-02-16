@@ -14,8 +14,8 @@ func PatchConfigMap(cmName string, key string, value string) error {
 	return nil
 }
 
-func PatchGitOpsDeployment() error {
-	_, err := exec.Command("bash", "-c", "kubectl scale deployment gitops-operator -n codefresh --replicas=0").Output()
+func PatchGitOpsDeploymentReplicaSet(scale string) error {
+	_, err := exec.Command("bash", "-c", fmt.Sprintf("kubectl scale deployment gitops-operator -n codefresh --replicas=%s", scale)).Output()
 	if err != nil {
 		return err
 	}

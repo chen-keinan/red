@@ -36,6 +36,10 @@ func Cleanup(folder string, notSilent bool) error {
 		if err != nil {
 			return err
 		}
+		err = cluster.PatchGitOpsDeploymentReplicaSet("1")
+		if err != nil {
+			return err
+		}
 	}
 	if notSilent {
 		fmt.Println("- Clean up ngrok tunnels")
