@@ -64,7 +64,7 @@ func Setup(outputFolder string) error {
 		if err != nil {
 			return err
 		}
-		err = net.PortForward("8080", "8088", "argo-cd-server")
+		err = net.PortForward("8080", "8080", "argo-cd-server")
 		if err != nil {
 			return err
 		}

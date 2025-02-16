@@ -9,7 +9,7 @@ import (
 func GenerateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder string) error {
 	appProxyMap := map[string]string{
 		"NODE_TLS_REJECT_UNAUTHORIZED": "0",
-		"ARGO_CD_URL":                  "http://localhost:8088",
+		"ARGO_CD_URL":                  "http://localhost:8080",
 		"ARGO_WORKFLOWS_URL":           "http://localhost:2746",
 		"GIT_PASSWORD":                 "gitPassword",
 		"ARGO_CD_PASSWORD":             "ARGO_CD_PASSWORD",
@@ -64,7 +64,7 @@ func GenerateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder strin
 func GenerateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder string) error {
 	gitOpsOperatorMap := map[string]string{
 		"AP_URL":                    "<app-proxy-local-ip>",
-		"ARGO_CD_URL":               "localhost:8088",
+		"ARGO_CD_URL":               "localhost:8080",
 		"ARGO_WF_URL":               "http://localhost:2746",
 		"ARGO_WF_TOKEN":             "ARGO_WF_TOKEN",
 		"CF_TOKEN":                  "RUNTIME_TOKEN",

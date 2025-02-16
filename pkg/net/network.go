@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 )
 
@@ -41,17 +40,14 @@ func GetNgrokPublicUrl(port string, tunnelPort string) (string, error) {
 	return n["public_url"].(string), nil
 }
 
-func PortForward(portInternal string, portExternal string, deploymentName string) error {
-	out, err := exec.Command("bash", "-c", fmt.Sprintf("kubectl get pods -n codefresh | grep %s | awk '{print $1}'", deploymentName)).Output()
-	if err != nil {
-		return err
-	}
+func PortForward(portContainer string, portLocal string, deploymentName string) error {
+
 	var stdoutBuf, stderrBuf bytes.Buffer
-	forward := fmt.Sprintf("kubectl port-forward pods/%s %s:%s -n codefresh", strings.Trim(string(out), "\n"), portInternal, portExternal)
+	forward := fmt.Sprintf("kubectl port-forward deployment/%s %s:%s -n codefresh", deploymentName, portLocal, portContainer)
 	cmd := exec.Command("bash", "-c", forward)
 	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
 	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
-	err = cmd.Start() // Starts command asynchronously
+	err := cmd.Start() // Starts command asynchronously
 	if err != nil {
 		return err
 	}
