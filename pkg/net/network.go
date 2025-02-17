@@ -55,11 +55,6 @@ func PortForward(portContainer string, portLocal string, deploymentName string) 
 	if err != nil {
 		return err
 	}
-
-	 // Here I waiting to command to finish to zip the folder
-	 if err := cmd.Wait(); err != nil {
-		// Zip folder
-	 } 
 	time.Sleep(time.Second * 2)
 	return nil
 }
