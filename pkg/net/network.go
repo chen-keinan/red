@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -41,16 +42,24 @@ func GetNgrokPublicUrl(port string, tunnelPort string) (string, error) {
 }
 
 func PortForward(portContainer string, portLocal string, deploymentName string) error {
-
-	var stdoutBuf, stderrBuf bytes.Buffer
-	forward := fmt.Sprintf("kubectl port-forward deployment/%s %s:%s -n codefresh", deploymentName, portLocal, portContainer)
-	cmd := exec.Command("bash", "-c", forward)
-	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
-	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
-	err := cmd.Start() // Starts command asynchronously
+	out, err := exec.Command("bash", "-c", fmt.Sprintf("kubectl get pods -n codefresh | grep %s | awk '{print $1}'", deploymentName)).Output()
 	if err != nil {
 		return err
 	}
+	var stdoutBuf, stderrBuf bytes.Buffer
+	forward := fmt.Sprintf("kubectl port-forward pod/%s %s:%s -n codefresh &", strings.Trim(string(out), "\n"), portLocal, portContainer)
+	cmd := exec.Command("bash", "-c", forward)
+	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
+	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
+	err = cmd.Start() // Starts command asynchronously
+	if err != nil {
+		return err
+	}
+
+	 // Here I waiting to command to finish to zip the folder
+	 if err := cmd.Wait(); err != nil {
+		// Zip folder
+	 } 
 	time.Sleep(time.Second * 2)
 	return nil
 }
