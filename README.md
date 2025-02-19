@@ -1,4 +1,4 @@
-## Runtime Dev Env CLI
+## Runtime Env Dev CLI
 Simplify development via IDE with runtime components running in cluster (app-proxy / gitops-operator)
 - Setup ngrok tunnels from cluster to local env
 - Port forward fro cluster to local env
