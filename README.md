@@ -25,10 +25,11 @@ red
 ```
 
 ```sh
-red
+Runtime Env Dev
 Command Options:
--- clean      Clean up resources and delete DevEnv files
--- setup      Setting up app-proxy and gitops-operator DevEnv
+--clean      Clean up resources and delete DevEnv files
+--setup      Setting up app-proxy and gitops-operator DevEnv
+--no-setup   loading setting from red.json (this option is not valid on 1st setup)
 ```
 
 ## Setup - Dev Env
@@ -36,10 +37,10 @@ Command Options:
 red --setup
 ***************************************************************************************************************************
 
-1. Enter Helm Values Path (default: /Users/chenkeinan/workspace/codefresh-values/local.values.yaml):
+1. Enter Helm Values Path (default: /Users/<UserName>/workspace/codefresh-values/local.values.yaml):
 2. Enter Codefresh Namespace (default: codefresh):
 3. Enter Cluster Name (default: kind-codefresh-local-cluster):
-4. Enter Environment Variable Script Path (default: /Users/chenkeinan/workspace/codefresh-values/env.sh):
+4. Enter Environment Variable Script Path (default: /Users/<UserName>/workspace/codefresh-values/env.sh):
 5. Enter debug-app-proxy (default: y):
 6. Enter debug-gitops-operator (default: y):
 
@@ -53,8 +54,8 @@ red --setup
 - Updating gitops-operator-notifications cm
 ********************************************************
 -- output files:
-/Users/chenkeinan/.red/app-proxy-dev-env.json
-/Users/chenkeinan/.red/gitops-operator-dev-env.json
+ /Users/<UserName>/.red/app-proxy-dev-env.json
+ /Users/<UserName>/.red/gitops-operator-dev-env.json
 
 ******************************************************
 port forward on ports:

@@ -21,7 +21,7 @@ func CreateOutputFolder(path string) error {
 }
 
 func Help() {
-	fmt.Println("red")
+	fmt.Println("Runtime Env Dev")
 	fmt.Println("Command Options:")
 	fmt.Println("--clean      Clean up resources and delete DevEnv files")
 	fmt.Println("--setup      Setting up app-proxy and gitops-operator DevEnv")
