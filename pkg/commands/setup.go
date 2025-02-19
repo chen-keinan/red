@@ -128,7 +128,7 @@ func Setup(outputFolder string, noSetup bool) error {
 		}
 	}
 	fmt.Println("********************************************************")
-	fmt.Println("-- Copy the EnvVars values from output files to IDE run setting:\n")
+	fmt.Println("-- Copy the EnvVars values from output JSON files to IDE debug env setting:\n")
 	if paramMap["debug_app_proxy"] == "y" {
 		err := env.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
 		if err != nil {

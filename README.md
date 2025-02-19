@@ -54,7 +54,7 @@ red --setup
 - Tunneling 8082 --> Localhost
 - Updating gitops-operator-notifications cm
 ********************************************************
--- Copy the EnvVars values from output files to IDE run setting:
+-- Copy the EnvVars values from output JSON files to IDE debug env setting:
 
 /Users/chenkeinan/.red/app-proxy-dev-env.json
 /Users/chenkeinan/.red/gitops-operator-dev-env.json
@@ -68,7 +68,7 @@ Enjoy Debugging :)
 press Ctrl-c to terminate
 ```
 
-copy the env var values from the `output files` and put it in your IDE (`app-proxy` and `gitops-operator` launch setting)
+copy EnvVars from the `output JSON files` and put it in your IDE (`app-proxy` and `gitops-operator` env launch setting)
 
 ## Cleanup -  Dev Env
 ```sh
