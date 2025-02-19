@@ -128,7 +128,7 @@ func Setup(outputFolder string, noSetup bool) error {
 		}
 	}
 	fmt.Println("********************************************************")
-	fmt.Println("-- output files:")
+	fmt.Println("-- Copy the EnvVars values from output files to IDE run setting:\n")
 	if paramMap["debug_app_proxy"] == "y" {
 		err := env.GenerateEnvVarForAppProxyDev(paramMap, outputFolder)
 		if err != nil {
@@ -143,7 +143,8 @@ func Setup(outputFolder string, noSetup bool) error {
 	}
 	fmt.Println("\n******************************************************")
 	fmt.Println(fmt.Sprintf("port forward on ports:\n %s", buffer.String()))
-	fmt.Println("Enjoy Debugging :) press Ctrl-c to terminate")
+	fmt.Println("Enjoy Debugging :)")
+	fmt.Println("press Ctrl-c to terminate")
 	net.PortForward(pf)
 	return nil
 }

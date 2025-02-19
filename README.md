@@ -53,16 +53,18 @@ red --setup
 - Tunneling 8082 --> Localhost
 - Updating gitops-operator-notifications cm
 ********************************************************
--- output files:
- /Users/<UserName>/.red/app-proxy-dev-env.json
- /Users/<UserName>/.red/gitops-operator-dev-env.json
+-- Copy the EnvVars values from output files to IDE run setting:
+
+/Users/chenkeinan/.red/app-proxy-dev-env.json
+/Users/chenkeinan/.red/gitops-operator-dev-env.json
 
 ******************************************************
 port forward on ports:
  2746:2746
 8080:8080
 
-Enjoy Debugging :) Press Ctrl-c to terminate
+Enjoy Debugging :)
+press Ctrl-c to terminate
 ```
 
 copy the env var values from the `output files` and put it in your IDE (app-proxy and gitops-operator launch setting)
