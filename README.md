@@ -68,8 +68,6 @@ Enjoy Debugging :)
 press Ctrl-c to terminate
 ```
 
-copy EnvVars from the `output JSON files` and put it in your IDE (`app-proxy` and `gitops-operator` env launch setting)
-
 ## Cleanup -  Dev Env
 ```sh
 red --clean
