@@ -65,7 +65,7 @@ port forward on ports:
 Enjoy Debugging :) Press Ctrl-c to terminate
 ```
 
-copy the env var values from the `output files` and put it in your ide (app-proxy and gitops-operator launch setting )
+copy the env var values from the `output files` and put it in your IDE (app-proxy and gitops-operator launch setting)
 
 ## Cleanup -  Dev Env
 ```sh
