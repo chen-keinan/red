@@ -68,7 +68,7 @@ Enjoy Debugging :)
 press Ctrl-c to terminate
 ```
 
-copy the env var values from the `output files` and put it in your IDE (app-proxy and gitops-operator launch setting)
+copy the env var values from the `output files` and put it in your IDE (`app-proxy` and `gitops-operator` launch setting)
 
 ## Cleanup -  Dev Env
 ```sh
