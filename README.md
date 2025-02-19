@@ -34,13 +34,12 @@ Command Options:
 ## Setup - Dev Env
 ```sh
 devcli --setup
-
 ***************************************************************************************************************************
 
-1. Enter Helm Values Path (default: /path/to/runtime/values.yaml):
+1. Enter Helm Values Path (default: /Users/chenkeinan/workspace/codefresh-values/local.values.yaml):
 2. Enter Codefresh Namespace (default: codefresh):
-3. Enter Cluster Name (default: kind-local-cluster):
-4. Enter Environment Variable Script Path (default: /path/to/env/extarct/script/env.sh):
+3. Enter Cluster Name (default: kind-codefresh-local-cluster):
+4. Enter Environment Variable Script Path (default: /Users/chenkeinan/workspace/codefresh-values/env.sh):
 5. Enter debug-app-proxy (default: y):
 6. Enter debug-gitops-operator (default: y):
 
@@ -49,20 +48,20 @@ devcli --setup
 - Reading Helm Values
 - Extracting Values from EnvVar script
 - Tunneling 3017 --> Localhost
-Forwarding from 127.0.0.1:2746 -> 2746
-Forwarding from [::1]:2746 -> 2746
-Forwarding from 127.0.0.1:8080 -> 8080
-Forwarding from [::1]:8080 -> 8080
 - Updating codefresh-cm
 - Tunneling 8082 --> Localhost
-- Scalling down gitops operator to 0
 - Updating gitops-operator-notifications cm
 ********************************************************
 -- output files:
-/Users/<name>/.devcli/app-proxy-dev-env.json
-/Users/<name>/.devcli/gitops-operator-dev-env.json
+/Users/chenkeinan/.devcli/app-proxy-dev-env.json
+/Users/chenkeinan/.devcli/gitops-operator-dev-env.json
 
 ******************************************************
+port forward on ports:
+ 2746:2746
+8080:8080
+
+Enjoy Debugging :) Press Ctrl-c to terminate
 ```
 
 copy the env var values from the `output files` and put it in your ide (app-proxy and gitops-operator launch setting )

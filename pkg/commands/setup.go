@@ -81,7 +81,7 @@ func Setup(outputFolder string) error {
 			return err
 		}
 		argoServerPortForward = true
-		if paramMap["debug_gitops_operator"] == "n" { 
+		if paramMap["debug_gitops_operator"] == "n" {
 			err = cluster.PatchGitOpsOperatorAppProxyEnvVar(paramMap["app-proxy-local-ip"])
 			if err != nil {
 				return err
@@ -140,6 +140,7 @@ func Setup(outputFolder string) error {
 	}
 	fmt.Println("\n******************************************************")
 	fmt.Println(fmt.Sprintf("port forward on ports:\n %s", buffer.String()))
+	fmt.Println("Enjoy Debugging :) press Ctrl-c to terminate")
 	net.PortForward(pf)
 	return nil
 }
