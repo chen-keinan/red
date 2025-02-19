@@ -1,7 +1,5 @@
 GOCMD=go
 
-all:
-	$(info  "completed running make file for red")
 fmt:
 	@go fmt ./...
 build:
