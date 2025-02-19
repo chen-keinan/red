@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"devcli/pkg"
 	"devcli/pkg/cluster"
 	"devcli/pkg/env"
@@ -10,6 +11,8 @@ import (
 )
 
 func Setup(outputFolder string) error {
+	pf := make([]string, 0)
+	var buffer bytes.Buffer
 	paramMap := map[string]string{
 		"helm_values_path":                 "/helm_values/file/path",
 		"codefresh_namespace":              "codefresh",
@@ -60,20 +63,30 @@ func Setup(outputFolder string) error {
 			return err
 		}
 		paramMap["app-proxy-local-ip"] = appProxyLocalIp
-		err = net.PortForward("2746", "2746", "argo-server")
+		buffer.WriteString("2746:2746\n")
+		pas, err := net.PortForwardString("2746", "2746", "argo-server")
 		if err != nil {
 			return err
 		}
-		err = net.PortForward("8080", "8080", "argo-cd-server")
+		pf = append(pf, pas)
+		buffer.WriteString("8080:8080\n")
+		pfacd, err := net.PortForwardString("8080", "8080", "argo-cd-server")
 		if err != nil {
 			return err
 		}
+		pf = append(pf, pfacd)
 		fmt.Println("- Updating codefresh-cm")
 		err = cluster.PatchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
 		if err != nil {
 			return err
 		}
 		argoServerPortForward = true
+		if paramMap["debug_gitops_operator"] == "n" { 
+			err = cluster.PatchGitOpsOperatorAppProxyEnvVar(paramMap["app-proxy-local-ip"])
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	if paramMap["debug_gitops_operator"] == "y" {
@@ -85,15 +98,12 @@ func Setup(outputFolder string) error {
 		}
 		paramMap["gitops-operator-local-ip"] = gitopsOperatorLocalIp
 		if !argoServerPortForward {
-			err = net.PortForward("2746", "2746", "argo-server")
+			buffer.WriteString("2746:2746\n")
+			pfas, err := net.PortForwardString("2746", "2746", "argo-server")
 			if err != nil {
 				return err
 			}
-		}
-		fmt.Println("- Scalling down gitops operator to 0")
-		err = cluster.PatchGitOpsDeploymentReplicaSet("0")
-		if err != nil {
-			return err
+			pf = append(pf, pfas)
 		}
 		fmt.Println("- Updating gitops-operator-notifications cm")
 		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
@@ -105,10 +115,12 @@ func Setup(outputFolder string) error {
 			return err
 		}
 		if paramMap["debug_app_proxy"] != "y" {
-			err = net.PortForward("3017", "3017", "cap-app-proxy")
+			buffer.WriteString("3017:3017\n")
+			pfap, err := net.PortForwardString("3017", "3017", "cap-app-proxy")
 			if err != nil {
 				return err
 			}
+			pf = append(pf, pfap)
 			paramMap["app-proxy-local-ip"] = "http://localhost:3017"
 		}
 	}
@@ -127,5 +139,7 @@ func Setup(outputFolder string) error {
 		}
 	}
 	fmt.Println("\n******************************************************")
+	fmt.Println(fmt.Sprintf("port forward on ports:\n %s", buffer.String()))
+	net.PortForward(pf)
 	return nil
 }

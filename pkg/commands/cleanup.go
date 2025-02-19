@@ -22,6 +22,13 @@ func Cleanup(folder string, notSilent bool) error {
 		if err != nil {
 			return err
 		}
+		if config.DebugGitopsOperator == "n" {
+			err = cluster.PatchGitOpsOperatorAppProxyEnvVar("http://cap-app-proxy:3017")
+			if err != nil {
+				return err
+			}
+		}
+
 	}
 	if config.DebugGitopsOperator == "y" {
 		if notSilent {
@@ -33,10 +40,6 @@ func Cleanup(folder string, notSilent bool) error {
 			return err
 		}
 		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", gitOpsOperatorUrl))
-		if err != nil {
-			return err
-		}
-		err = cluster.PatchGitOpsDeploymentReplicaSet("1")
 		if err != nil {
 			return err
 		}

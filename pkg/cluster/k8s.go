@@ -14,8 +14,8 @@ func PatchConfigMap(cmName string, key string, value string) error {
 	return nil
 }
 
-func PatchGitOpsDeploymentReplicaSet(scale string) error {
-	_, err := exec.Command("bash", "-c", fmt.Sprintf("kubectl scale deployment gitops-operator -n codefresh --replicas=%s", scale)).Output()
+func PatchGitOpsOperatorAppProxyEnvVar(apUrl string) error {
+	_, err := exec.Command("bash", "-c", fmt.Sprintf("kubectl set env deployment/gitops-operator AP_URL=%s", apUrl)).Output()
 	if err != nil {
 		return err
 	}

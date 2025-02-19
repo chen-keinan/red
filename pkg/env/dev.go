@@ -64,7 +64,6 @@ func GenerateEnvVarForAppProxyDev(paramMap map[string]string, outputFolder strin
 func GenerateEnvVarForGitOpsOpertorDev(paramMap map[string]string, outputFolder string) error {
 	gitOpsOperatorMap := map[string]string{
 		"AP_URL":                    "<app-proxy-local-ip>",
-		"ARGO_CD_URL":               "localhost:8080",
 		"ARGO_WF_URL":               "http://localhost:2746",
 		"ARGO_WF_TOKEN":             "ARGO_WF_TOKEN",
 		"CF_TOKEN":                  "RUNTIME_TOKEN",
