@@ -59,6 +59,6 @@ func main() {
 			os.Exit(1)
 		}
 	default:
-		pkg.Help()
+		commands.Help()
 	}
 }
