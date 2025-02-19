@@ -29,7 +29,7 @@ RuntimeEnvDev
 Command Options:
 --clean      Clean up resources and delete DevEnv files
 --setup      Setting up app-proxy and gitops-operator DevEnv
---no-setup   Loading setup from red.json (not valid on 1st setup
+--no-setup   Loading setup from red.json (not valid on 1st setup)
 --help       Show avaliable command options
 ```
 
