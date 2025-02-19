@@ -2,11 +2,11 @@ package pkg
 
 import (
 	"bufio"
-	"devcli/pkg/env"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/user"
+	"red/pkg/env"
 	"strings"
 )
 
@@ -21,10 +21,11 @@ func CreateOutputFolder(path string) error {
 }
 
 func Help() {
-	fmt.Println("devcli")
+	fmt.Println("red")
 	fmt.Println("Command Options:")
-	fmt.Println("-- clean      Clean up resources and delete DevEnv files")
-	fmt.Println("-- setup      Setting up app-proxy and gitops-operator DevEnv")
+	fmt.Println("--clean      Clean up resources and delete DevEnv files")
+	fmt.Println("--setup      Setting up app-proxy and gitops-operator DevEnv")
+	fmt.Println("--no-setup   loading setting from red.json (this option is not valid on 1st setup)")
 }
 
 func GetOutputFolder() (string, error) {
@@ -32,7 +33,7 @@ func GetOutputFolder() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s/.devcli", usr.HomeDir), nil
+	return fmt.Sprintf("%s/.red", usr.HomeDir), nil
 }
 
 func ReadInput(paramMap map[string]string, configFolder string) error {
@@ -67,7 +68,7 @@ func ReadInput(paramMap map[string]string, configFolder string) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(fmt.Sprintf("%s/%s", configFolder, env.DevCliConfigFile), data, 0644)
+	err = os.WriteFile(fmt.Sprintf("%s/%s", configFolder, env.RedConfigFile), data, 0644)
 	if err != nil {
 		return err
 	}

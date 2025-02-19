@@ -14,18 +14,18 @@ Simplify development via IDE with runtime components running in cluster (app-pro
 - make sure the `env.sh` script (extract runtime values) is avaliable on specific folder
 
 ```sh
-git clone https://github.com/chen-keinan/devcli
-cd devcli
+git clone https://github.com/chen-keinan/red
+cd red
 make install
 ```
 
 ## Basic usage
 ```sh
-devcli
+red
 ```
 
 ```sh
-devcli
+red
 Command Options:
 -- clean      Clean up resources and delete DevEnv files
 -- setup      Setting up app-proxy and gitops-operator DevEnv
@@ -33,7 +33,7 @@ Command Options:
 
 ## Setup - Dev Env
 ```sh
-devcli --setup
+red --setup
 ***************************************************************************************************************************
 
 1. Enter Helm Values Path (default: /Users/chenkeinan/workspace/codefresh-values/local.values.yaml):
@@ -53,8 +53,8 @@ devcli --setup
 - Updating gitops-operator-notifications cm
 ********************************************************
 -- output files:
-/Users/chenkeinan/.devcli/app-proxy-dev-env.json
-/Users/chenkeinan/.devcli/gitops-operator-dev-env.json
+/Users/chenkeinan/.red/app-proxy-dev-env.json
+/Users/chenkeinan/.red/gitops-operator-dev-env.json
 
 ******************************************************
 port forward on ports:
@@ -68,10 +68,10 @@ copy the env var values from the `output files` and put it in your ide (app-prox
 
 ## Cleanup -  Dev Env
 ```sh
-devcli --clean
+red --clean
 - Revert codefresh-cm configmap
 - Revert gitops-operator-notifications-cm configmap
 - Clean up ngrok tunnels
 - Clean up port forwards
-- Clean up output folder: /Users/<name>/.devcli
+- Clean up output folder: /Users/<name>/.red
 ```

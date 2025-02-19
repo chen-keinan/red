@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const DevCliConfigFile = "devcli.json"
+const RedConfigFile = "red.json"
 
 func AddEnvParams(envVar map[string]string) error {
 	cmd := fmt.Sprintf("%s %s %s", envVar["environment_variable_script_path"], envVar["codefresh_namespace"], envVar["cluster_name"])
@@ -41,7 +41,7 @@ func trimValues(val string) string {
 	return strings.TrimSpace(val)
 }
 
-type DevCliConfig struct {
+type RedConfig struct {
 	HelmValuesPath                string `json:"helm_Values_path"`
 	CodefreshNamespace            string `json:"codefresh_namespace"`
 	CodefreshClusterName          string `json:"cluster_name"`
@@ -50,19 +50,26 @@ type DevCliConfig struct {
 	DebugGitopsOperator           string `json:"debug_gitops_operator"`
 }
 
-func LoadConfigfile(folderPath string) *DevCliConfig {
-	devcli, err := os.Open(fmt.Sprintf("%s/%s", folderPath, DevCliConfigFile))
+func LoadConfigfile(folderPath string) (*RedConfig, error) {
+	red, err := os.Open(fmt.Sprintf("%s/%s", folderPath, RedConfigFile))
 	if err != nil {
-		return nil
+		return nil, nil
 	}
-	byteValue, _ := io.ReadAll(devcli)
-
-	// we initialize our Users array
-	var devCliConfig DevCliConfig
-
-	err = json.Unmarshal(byteValue, &devCliConfig)
+	byteValue, err := io.ReadAll(red)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return &devCliConfig
+
+	var redConfig RedConfig
+
+	err = json.Unmarshal(byteValue, &redConfig)
+	if err != nil {
+		return nil, err
+	}
+	return &redConfig, nil
+}
+
+func ConfigFileExist(folderPath string) bool {
+	_, err := os.Open(fmt.Sprintf("%s/%s", folderPath, RedConfigFile))
+	return err == nil
 }

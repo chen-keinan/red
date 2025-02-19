@@ -1,15 +1,21 @@
 package commands
 
 import (
-	"devcli/pkg/cluster"
-	"devcli/pkg/env"
 	"fmt"
 	"os"
 	"os/exec"
+	"red/pkg/cluster"
+	"red/pkg/env"
 )
 
 func Cleanup(folder string, notSilent bool) error {
-	config := env.LoadConfigfile(folder)
+	config, err := env.LoadConfigfile(folder)
+	if err != nil {
+		return err
+	}
+	if config == nil {
+		return nil
+	}
 	ingressUrl, err := cluster.GetIngressUrl(config.HelmValuesPath)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-module devcli
+module red
 
 go 1.23.4
 

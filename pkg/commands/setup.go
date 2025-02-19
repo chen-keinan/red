@@ -2,15 +2,15 @@ package commands
 
 import (
 	"bytes"
-	"devcli/pkg"
-	"devcli/pkg/cluster"
-	"devcli/pkg/env"
-	"devcli/pkg/net"
 	"fmt"
+	"red/pkg"
+	"red/pkg/cluster"
+	"red/pkg/env"
+	"red/pkg/net"
 	"strconv"
 )
 
-func Setup(outputFolder string) error {
+func Setup(outputFolder string, noSetup bool) error {
 	pf := make([]string, 0)
 	var buffer bytes.Buffer
 	paramMap := map[string]string{
@@ -22,7 +22,10 @@ func Setup(outputFolder string) error {
 		"debug_gitops_operator":            "y",
 	}
 
-	config := env.LoadConfigfile(outputFolder)
+	config, err := env.LoadConfigfile(outputFolder)
+	if err != nil {
+		return err
+	}
 	if config != nil {
 		paramMap["helm_values_path"] = config.HelmValuesPath
 		paramMap["codefresh_namespace"] = config.CodefreshNamespace
@@ -31,11 +34,11 @@ func Setup(outputFolder string) error {
 		paramMap["debug_app_proxy"] = config.DebugAppProxy
 		paramMap["debug_gitops_operator"] = config.DebugGitopsOperator
 	}
-
-	// read user input
-	err := pkg.ReadInput(paramMap, outputFolder)
-	if err != nil {
-		return err
+	if noSetup {
+		err = pkg.ReadInput(paramMap, outputFolder)
+		if err != nil {
+			return err
+		}
 	}
 	// add params from values yaml
 	fmt.Println("- Reading Helm Values")
