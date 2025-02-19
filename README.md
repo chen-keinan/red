@@ -1,4 +1,4 @@
-## Runtime Dev Cli
+## Runtime Dev Env CLI
 Simplify development via IDE with runtime components running in cluster (app-proxy / gitops-operator)
 - Setup ngrok tunnels from cluster to local env
 - Port forward fro cluster to local env
@@ -29,7 +29,7 @@ Runtime Env Dev
 Command Options:
 --clean      Clean up resources and delete DevEnv files
 --setup      Setting up app-proxy and gitops-operator DevEnv
---no-setup   loading setting from red.json (this option is not valid on 1st setup)
+--no-setup   loading setting from /Users/<UserName>/red.json (this option is not valid on 1st setup)
 ```
 
 ## Setup - Dev Env
