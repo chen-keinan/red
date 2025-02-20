@@ -28,6 +28,20 @@ func GetOutputFolder() (string, error) {
 	return fmt.Sprintf("%s/.red", usr.HomeDir), nil
 }
 
+func InitOutPutFolder() (string, error) {
+	outputFolder, err := GetOutputFolder()
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: failed to get output folder name: %w", err))
+		return "", err
+	}
+	CreateOutputFolder(outputFolder)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: failed to create output folder: %w", err))
+		return "", err
+	}
+	return outputFolder, nil
+}
+
 func ReadInput(paramMap map[string]string, configFolder string) error {
 	inputScanner := bufio.NewScanner(os.Stdin)
 	count := 1

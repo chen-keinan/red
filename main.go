@@ -9,21 +9,15 @@ import (
 )
 
 func main() {
+	outputFolder, err := pkg.InitOutPutFolder()
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: failed to cleanup resources: %w", err))
+		os.Exit(1)
+	}
 	commandsParam := os.Args[1:]
-	outputFolder, err := pkg.GetOutputFolder()
-	if err != nil {
-		fmt.Println(fmt.Errorf("error: failed to get output folder name: %w", err))
-		os.Exit(1)
-	}
-	pkg.CreateOutputFolder(outputFolder)
-	if err != nil {
-		fmt.Println(fmt.Errorf("error: failed to create output folder: %w", err))
-		os.Exit(1)
-	}
 	if len(commandsParam) == 0 {
 		commandsParam = append(commandsParam, "no-command")
 	}
-
 	switch commandsParam[0] {
 	case "--clean":
 		err = commands.Cleanup(outputFolder, true)
