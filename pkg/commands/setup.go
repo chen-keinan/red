@@ -78,6 +78,12 @@ func Setup(outputFolder string, noSetup bool) error {
 			return err
 		}
 		pf = append(pf, pfacd)
+		buffer.WriteString("8090:8090\n")
+		sser, err := net.PortForwardString("8090", "8090", "sources-server")
+		if err != nil {
+			return err
+		}
+		pf = append(pf, sser)
 		fmt.Println("- Updating codefresh-cm")
 		err = cluster.PatchConfigMap("codefresh-cm", "ingressHost", paramMap["app-proxy-local-ip"])
 		if err != nil {
