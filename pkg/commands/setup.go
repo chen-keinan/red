@@ -114,15 +114,6 @@ func Setup(outputFolder string, noSetup bool) error {
 			}
 			pf = append(pf, pfas)
 		}
-		fmt.Println("- Updating gitops-operator-notifications cm")
-		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
-		if err != nil {
-			return err
-		}
-		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", paramMap["gitops-operator-local-ip"]))
-		if err != nil {
-			return err
-		}
 		if paramMap["debug_app_proxy"] != "y" {
 			buffer.WriteString("3017:3017\n")
 			pfap, err := net.PortForwardString("3017", "3017", "cap-app-proxy")

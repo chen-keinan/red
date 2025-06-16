@@ -52,7 +52,6 @@ red --setup
 - Tunneling 3017 --> Localhost
 - Updating codefresh-cm
 - Tunneling 8082 --> Localhost
-- Updating gitops-operator-notifications cm
 ********************************************************
 -- Copy the EnvVars values from output JSON files to IDE debug env setting:
 
@@ -72,7 +71,6 @@ press Ctrl-c to terminate
 ```sh
 red --clean
 - Revert codefresh-cm configmap
-- Revert gitops-operator-notifications-cm configmap
 - Clean up ngrok tunnels
 - Clean up port forwards
 - Clean up output folder: /Users/<name>/.red

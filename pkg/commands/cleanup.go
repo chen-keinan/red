@@ -36,20 +36,7 @@ func Cleanup(folder string, notSilent bool) error {
 		}
 
 	}
-	if config.DebugGitopsOperator == "y" {
-		if notSilent {
-			fmt.Println("- Revert gitops-operator-notifications-cm configmap")
-		}
-		gitOpsOperatorUrl := "http://localhost:8082"
-		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-degraded-notifier", fmt.Sprintf("url: %s/app-degraded\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", gitOpsOperatorUrl))
-		if err != nil {
-			return err
-		}
-		err = cluster.PatchConfigMap("gitops-operator-notifications-cm", "service.webhook.cf-promotion-app-revision-changed-notifier", fmt.Sprintf("url: %s/app-revision-changed\\nheaders:\\n- name: Content-Type\\n  value: application/json\\n", gitOpsOperatorUrl))
-		if err != nil {
-			return err
-		}
-	}
+
 	if notSilent {
 		fmt.Println("- Clean up ngrok tunnels")
 	}
